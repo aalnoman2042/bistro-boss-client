@@ -21,11 +21,12 @@ const PopularMenu = () => {
         <div className="grid gap-10 md:grid-cols-2">
             {
                 menu.map(item=> <MenuItem
-                key={item.id}
+                key={item._id}
                 item={item}
                 ></MenuItem>)
             }
         </div>
+        <button className="mt-4 border-0 border-b-4 btn btn-outline">view Full Menu</button>
 </section>
     );
 };
