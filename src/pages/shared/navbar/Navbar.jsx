@@ -1,31 +1,58 @@
 import { useContext } from "react";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AuthContext } from "../../../providers/AuthProvider";
-
+import { FaShoppingCart } from 'react-icons/fa';
+import useCart from "../../../hooks/UseCart";
 const Navbar = () => {
-    const {user, logOut} = useContext(AuthContext)
-    
+  const { user, logOut } = useContext(AuthContext);
+  const [cart] = useCart()
+  console.log(cart);
 
-      const handleLogOut = () =>{
-        logOut()
-        .then(()=>{})
-        .catch(error => console.log(error))
-      }
-    
-    const navoption = <>
-        <li><Link to='/'>Home</Link></li>
-              <li>  <Link to='/menu'>Our menu</Link></li>
-        <li><Link to='/Order/salad'>Order</Link></li>
-        <li><Link to='/secret'>secret</Link></li>
-        {
-          user ? <>
-          <span>{user?.displayName}</span>
-          <button onClick={handleLogOut} className="btn btn-ghost ">logout</button>
-          </>:
-          <li><Link to="/login">login</Link></li>
-        }
-             
+  const handleLogOut = () => {
+    logOut()
+      .then(() => {})
+      .catch((error) => console.log(error));
+  }; 
+
+  
+
+  const navoption = (
+    <>
+      <li>
+        <Link to="/">Home</Link>
+      </li>
+      <li>
+        {" "}
+        <Link to="/menu">Our menu</Link>
+      </li>
+      <li>
+        <Link to="/Order/salad">Order</Link>
+      </li>
+      <li>
+        <Link to="/secret">secret</Link>
+      </li>
+      <li>
+        <Link to="">
+          <button className="gap-2 btn">
+          <FaShoppingCart></FaShoppingCart>
+            <div className="badge badge-secondary">+{cart?.length ||0}</div>
+          </button>
+        </Link>
+      </li>
+      {user ? (
+        <>
+          {/* <span>{user?.displayName}</span> */}
+          <button onClick={handleLogOut} className="btn btn-ghost ">
+            logout
+          </button>
+        </>
+      ) : (
+        <li>
+          <Link to="/login">login</Link>
+        </li>
+      )}
     </>
+  );
   return (
     <>
       <div className="fixed z-10 max-w-screen-xl text-white bg-slate-700 navbar bg-opacity-30 ">
@@ -57,9 +84,7 @@ const Navbar = () => {
           <a className="text-xl normal-case btn btn-ghost">Bistro Boss</a>
         </div>
         <div className="hidden navbar-center lg:flex">
-          <ul className="px-1 menu menu-horizontal">
-          {navoption}
-          </ul>
+          <ul className="px-1 menu menu-horizontal">{navoption}</ul>
         </div>
         <div className="navbar-end">
           <a className="btn">Get started</a>
