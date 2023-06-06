@@ -15,7 +15,8 @@ const MyCart = () => {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, delete it!'
-          }).then((result) => {
+          })
+          .then((result) => {
             if (result.isConfirmed) {
                 fetch(`http://localhost:5000/carts/${item._id}`,{
                     method: 'DELETE',
@@ -39,9 +40,9 @@ const MyCart = () => {
 
   return (
     <div>
-      <Helmet>
+    <Helmet>
         <title>Bistro | My cart</title>
-      </Helmet>
+      </Helmet>  
       <div className="flex items-center font-semibold uppercase justify-evenly h-[60px]">
         <h3 className="text-3xl">Total Items:{cart.length}</h3>
         <h3 className="text-3xl">Total price:${total}</h3>

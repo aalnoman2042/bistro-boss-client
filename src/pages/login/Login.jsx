@@ -4,6 +4,7 @@ import { AuthContext } from '../../providers/AuthProvider';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Swal from 'sweetalert2';
+import SocialLogin from '../shared/socialLogin/SocialLogin';
 
 const Login = () => {
     
@@ -24,7 +25,7 @@ const Login = () => {
         const form = event.target;
         const email = form.email.value;
         const password = form.password.value;
-        console.log(name, password);
+        console.log(email, password);
 
         login(email, password)
         .then(result =>{
@@ -95,10 +96,11 @@ const Login = () => {
               
               <div className="mt-6 form-control">
              
-                <input disabled={disabled} className="btn btn-primary" type="submit" value="Login" />
+                <input disabled={false} className="btn btn-primary" type="submit" value="Login" />
               </div>
             </form>
             <p className='w-full text-center'><small>New Here?<Link className='text-purple-600' to="/signup">signup here</Link> </small></p>
+            <SocialLogin></SocialLogin>
           </div>
         </div>
       </div>
