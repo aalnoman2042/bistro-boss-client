@@ -18,7 +18,7 @@ const Payment = () => {
       ></SectionTitle>
       <h2 className="text-3xl">taka o taka</h2>
       <Elements stripe={stripePromise}>
-        <CheckOut price={price}></CheckOut>
+        <CheckOut price={price} cart={cart}></CheckOut>
       </Elements>
     </div>
   );

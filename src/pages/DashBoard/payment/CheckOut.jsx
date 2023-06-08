@@ -3,25 +3,37 @@ import { useEffect } from "react";
 import { useState } from "react";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/USeAuth";
+import './CheckOutForm.css'
 
-const CheckOut = ({price}) => {
+
+const CheckOut = ({cart,price}) => {
     const stripe = useStripe()
     const elements = useElements()
     const {user} = useAuth()
     const [axiosSecure] =useAxiosSecure()
     const [cardError,  setCardError] = useState("")
     const [clientSecret, setClientSecret]= useState("")
+    const [processing, setProcessing] = useState(false)
+    const [transactionId, settransactionId] = useState('')
 
 
-    useEffect(()=>{
-        axiosSecure.post('/create-payment-intent',{
-            price
-        })
-        .then(res =>{
-            console.log(res.data.clientSecret);
-            setClientSecret(res.data.clientSecret)
-        })
-    },[])
+  
+
+  useEffect(()=>{
+    if(price > 0){
+
+      axiosSecure.post('/create-payment-intent',{
+        price
+    })
+    .then(res =>{
+        console.log(res.data.clientSecret);
+        setClientSecret(res.data.clientSecret)
+    })
+    }
+   
+},[price, axiosSecure])
+
+
 
     
 
@@ -48,6 +60,8 @@ const CheckOut = ({price}) => {
                 setCardError('')
                 console.log("payment meythod", paymentMethod);
             }
+            
+            setProcessing(true)
             const {paymentIntent, error: confirError} = await stripe.confirmCardPayment(clientSecret,{
                 payment_method: {
                     card: card,
@@ -59,6 +73,30 @@ const CheckOut = ({price}) => {
             })
             if(confirError){
                 console.log(confirError);
+            }
+            console.log("payment intennt",paymentIntent);
+            setProcessing(false)
+            if(paymentIntent.status === 'succeeded'){
+              
+              const transactionId = paymentIntent.id
+              settransactionId(transactionId)
+              // save payment informnation to the servre
+              const payment = {emai: user?.email,transactionId:paymentIntent.id ,
+              price,
+              data: new Date(),
+              quantity: cart.length,
+              cartItems: cart.map(item=> item._id),
+              menuItems: cart.map(item => item.menuItemId),
+              status: 'service pending',
+              itemNames: cart.map(item => item.name)
+              }
+              axiosSecure.post('/payment', payment)
+              .then(res =>{
+                console.log(res.data);
+                if(res.data.result.insertedId){
+                  // 
+                }
+              })
             }
             
         }
@@ -83,12 +121,15 @@ const CheckOut = ({price}) => {
           },
         }}
       />
-      <button className="mt-12 btn btn-primary" type="submit" disabled={!stripe || !clientSecret}>
+      <button className="mt-12 btn btn-primary" type="submit" disabled={!stripe || !clientSecret || processing}>
         Pay
       </button>
     </form>
     {
         cardError&& <p className="ml-8 text-red-600">{cardError}</p>
+    }
+    {
+      transactionId && <p className="text-green-600">transaction complete: id: {transactionId}</p>
     }
      </>
     );
